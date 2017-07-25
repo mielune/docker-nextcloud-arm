@@ -1,0 +1,32 @@
+
+
+
+
+Folder where data is store: /data
+Config in: /config
+
+Set the host folder linked to with: -v /somewhere/data:/data
+
+Config file must be stored in this folder too.
+
+Run:
+docker run -d --name nextcloud-db -v /home/pirate/tmp/mysql:/var/lib/mysql turgon37/armhf-mariadb
+docker run -d -p 8000:80 --link nextcloud-db:mariadb -v /home/pirate/tmp/data:/data mielune/nextcloud-arm
+
+Init:
+sleep 10
+
+#docker exec nextcloud-db mysql_install_db --user=mysql
+
+# For this command, check the 1st start logs to get the root generated password: docker logs nextcloud-db
+export ROOT_PW=me9quoo9eiCoh6quie5ow0va8Apiu8ah
+export NC_PW=Pwd4NextCloud
+docker exec \
+       -e ROOT_PW=$ROOT_PW \
+       -e NC_PW=$NC_PW \
+       nextcloud-db \
+       /usr/bin/mysql -u root --password=$ROOT_PW -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '$NC_PW';"
+docker exec \
+       -e ROOT_PW=$ROOT_PW \
+       nextcloud-db \
+       /usr/bin/mysql -u root --password=$ROOT_PW -e "GRANT ALL ON *.* to 'nextcloud'@'%'; FLUSH PRIVILEGES;"

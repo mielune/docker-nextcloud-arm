@@ -1,0 +1,25 @@
+version: '2'
+services:
+  nc-app:
+    labels:
+      app: nextcloud
+    image: mielune/nextcloud-arm
+    ports:
+      - "8000:80/tcp"
+    volumes:
+      - /home/pirate/tmp/data:/var/www/nextcloud/data
+    depends_on:
+      - nc-db
+  nc-db:
+    image: turgon37/armhf-mariadb
+    labels:
+      app: nextcloud
+    expose:
+      - "3306/tcp"
+    volumes:
+      - /home/pirate/tmp/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=Pwd4NextCloud
+
